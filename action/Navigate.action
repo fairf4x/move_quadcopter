@@ -1,0 +1,11 @@
+# The goal.
+#geometry_msgs/Pose2D start
+geometry_msgs/Pose2D end
+float32 height
+bool relative
+---
+# The result after the action has finished.
+geometry_msgs/Pose2D final_location
+---
+# The current location is returned as feedback.
+geometry_msgs/Pose2D current_location
