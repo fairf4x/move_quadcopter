@@ -16,19 +16,21 @@ public:
 
 	NavigateQuadrotor(std::string name);
 	void executeNavigate(const hector_move_base::NavigateGoalConstPtr& goal);
-	void ReceiveOdometry(const geometry_msgs::Pose::ConstPtr & p);
-	void ReceiveGazeboGroundThruth(const gazebo_msgs::ModelStatesConstPtr& ground_states);
+  void positionUpdate(const geometry_msgs::PoseStamped::ConstPtr& robot_pose);
+  void faceTargetPosition(float tolerance, geometry_msgs::Pose& tp);
 
 private:
 
 	ros::NodeHandle node_handle;
 	ros::Publisher cmd_vel_pub_;
-	ros::Subscriber odom_update_sub_;
-	ros::Subscriber quadrotor_ground_truth_sub_;
+  ros::Subscriber robot_pose_;
 	
 	hector_move_base::NavigateFeedback feedback_; // Feedback struct -- returns robot's location.
 	actionlib::SimpleActionServer<hector_move_base::NavigateAction> as_; // The action server.
 	
+  // return angle distance of robot from targetAngle
+  float getAngleDelta(float targetAngle);
+
 	float robot_x;
 	float robot_y;
 	float robot_angle;
