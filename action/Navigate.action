@@ -1,11 +1,8 @@
-# The goal.
-#geometry_msgs/Pose2D start
-geometry_msgs/Pose2D end
-float32 height
-bool relative
+# goal point for navigation action
+geometry_msgs/Point target_pos
 ---
-# The result after the action has finished.
-geometry_msgs/Pose2D final_location
+# position reached by navigation after the action is finished
+geometry_msgs/Point reached_pos
 ---
-# The current location is returned as feedback.
-geometry_msgs/Pose2D current_location
+# distance from goal is returned as feedback
+float64 dist
