@@ -24,8 +24,7 @@ This will trigger `goalCallback` function of the client which sends a `move_quad
 3. take off (either by publishing to messages to `/cmd_vel` topic or by using joystick - see the comment in `indoor_test_hector_quadcopter.launch`)
 4. publish `geometry_msgs/Point` on `/get_goal` topic
 
-The quadcopter should start to move towards the goal marker (visible as small green sphere in RVIZ).
+The quadcopter should start to move towards the goal marker (visible as small green sphere in RVIZ). It should first adjust its altitude then rotate to face the target and start to moving towards it.
 
 ### Remarks
-- The `Z` coordinate is not used when navigating
 - navigation action is considered successfull by the server if the distance from the goal is less than 0.1 (see `NavigationServer::executeNavigate`)

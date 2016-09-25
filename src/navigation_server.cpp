@@ -10,7 +10,7 @@ as_(node_handle, name, boost::bind(&NavigationServer::executeNavigate, this, _1)
   goal_marker = node_handle.advertise<visualization_msgs::Marker>( "/goal_marker", 0 );
 
   // initialize twist topic
-  // second argument is number of cached messages on th topic
+  // second argument is number of cached messages on the topic
   cmd_vel_pub_ = node_handle.advertise<geometry_msgs::Twist>( "/cmd_vel", 1 );
 
   // initialize goal point
@@ -78,21 +78,46 @@ void NavigationServer::publishTwist()
     return;
   }
 
-  cmd.angular.z = 3.0 * atan2(    transform.getOrigin().y(),
-                                  transform.getOrigin().x());
-  cmd.linear.x = 0.4 * sqrt(  pow(transform.getOrigin().x(), 2) +
-                              pow(transform.getOrigin().y(), 2)
-                            );
-  // set maximum speed
-  if ( cmd.linear.x > 1)
-  {
-    cmd.linear.x = 1;
+  // get to desired altitude
+  float heightDist = transform.getOrigin().z();
+  if ( heightDist > hTresh ) {
+    // we need to raise up
+    cmd.linear.z = 0.3;
+  } else if ( heightDist < -hTresh ) {
+    // we need to dive down
+    cmd.linear.z = -0.3;
+  } else if ( abs(heightDist) < hTresh ) {
+    // we are roughly in the same altitude as the goal so we stop any vertical movement
+    cmd.linear.z = 0;
+
+    // ---- set angular speed ----
+    cmd.angular.z = 3.0 * atan2(    transform.getOrigin().y(),
+                                    transform.getOrigin().x());
+
+    // set maximum angular speed
+    if ( cmd.angular.z > 1)
+    {
+      cmd.angular.z = 1;
+    }
+   
+    // if we are almost "facing" the goal
+    if ( abs(cmd.angular.z) < 0.3) {
+    cmd.linear.x = 0.4 * sqrt(  pow(transform.getOrigin().x(), 2) +
+                                pow(transform.getOrigin().y(), 2)
+                              );
+      // set maximum linear speed
+      if ( cmd.linear.x > 1)
+      {
+        cmd.linear.x = 1;
+      }
+    } else {
+      cmd.linear.x = 0;
+    }
   }
 
-  //cmd.linear.z = 0.1 * sqrt(  pow(transform.getOrigin().x(), 2) +
-  //                            pow(transform.getOrigin().z(), 2)
-  //                          );
+  cmd_vel_pub_.publish(cmd);  
 
+  // update distance to the goal
   dist = sqrt(  pow(transform.getOrigin().x(), 2) +
                 pow(transform.getOrigin().y(), 2) +
                 pow(transform.getOrigin().z(), 2)
@@ -101,10 +126,7 @@ void NavigationServer::publishTwist()
   float angle = atan2(  transform.getOrigin().x(),
                         transform.getOrigin().z());
   
-  
   ROS_INFO("origin [X,Y,Z] = [ %f, %f, %f ]",transform.getOrigin().x(), transform.getOrigin().y(), transform.getOrigin().z());
-  
-  cmd_vel_pub_.publish(cmd);  
 }
 
 void NavigationServer::executeNavigate(const move_quadcopter::NavigateGoalConstPtr& goal)
@@ -122,14 +144,14 @@ void NavigationServer::executeNavigate(const move_quadcopter::NavigateGoalConstP
 
   ros::Rate loop_rate(100);
 
-  while(ros::ok() && (dist > 0.1))
+  while(ros::ok() && (dist > dTresh))
   {
+    // broadcast static goal->world transformation
+    broadcastGoalTF();
+
     // publish marker
     goal_marker.publish( setupMarker() );
 
-    // broadcast static goal->world transformation
-    broadcastGoalTF();
-    
     // publish twist message based on robot_base -> goal transform
     publishTwist();      
 

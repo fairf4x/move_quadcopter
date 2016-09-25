@@ -2,6 +2,7 @@
 #define MOVE_QUADROTOR_NAVIGATION_SERVER_H
 
 #include <ros/ros.h>
+#include <ros/console.h>
 #include <tf/tf.h>
 #include <math.h>
 #include <actionlib/server/simple_action_server.h>
@@ -59,6 +60,9 @@ private:
 
   // distance from goal
   float dist;
+
+  static const float hTresh = 0.3;
+  static const float dTresh = 0.1;
 
 };
 

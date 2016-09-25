@@ -43,7 +43,7 @@ int main (int argc, char **argv)
 
     ros::NodeHandle nh;
 
-    ros::Subscriber get_goal_point = nh.subscribe("/get_goal", 1000, goalCallback);
+    ros::Subscriber get_goal_point = nh.subscribe("/get_goal", 10, goalCallback);
     
     ros::spin();
     

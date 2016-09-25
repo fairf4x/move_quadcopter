@@ -13,7 +13,7 @@ GoalBroadcaster::GoalBroadcaster(ros::NodeHandle &nh): node_handle(nh)
   tf::TransformBroadcaster br;
   tf::Transform transform;
 
-  ros::Rate loop_rate(5);
+  ros::Rate loop_rate(1000);
 
   while(ros::ok())
   {

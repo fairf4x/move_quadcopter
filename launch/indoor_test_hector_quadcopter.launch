@@ -1,7 +1,10 @@
 <?xml version="1.0"?>
 
 <launch>
-   
+
+  <!-- Use simulation time (prevention for problems with TF frames?) -->   
+  <param name="/use_sim_time" type="bool" value="true"/>
+
   <!-- Start Gazebo with wg world running in (max) realtime -->
   <include file="$(find hector_gazebo_worlds)/launch/willow_garage.launch"/>
    
@@ -29,8 +32,9 @@
   <!-- Launch navigation client -->
   <node pkg="move_quadcopter" type="navigation_client" name="navigation_client"/>
 
-  <!-- optional joystick teleoperation - packages required: joy_teleop
   <include file="$(find move_quadcopter)/launch/joy_teleop_sim.launch"/>
-  -->
-  
+
+  <!-- Launch rqt_plot to monitor /cmd_vel -->
+
+  <node name="cmd_vel_plot" pkg="rqt_plot" type="rqt_plot" args="/cmd_vel/linear/x /cmd_vel/linear/y /cmd_vel/linear/z /cmd_vel/angular/z" />
 </launch>
