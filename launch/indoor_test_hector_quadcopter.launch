@@ -27,10 +27,10 @@
   <node pkg="rviz" type="rviz" name="rviz" args="-d $(find move_quadcopter)/rviz_cfg/indoor_test_hector.rviz"/>
 
   <!-- Launch navigation server -->
-  <node pkg="move_quadcopter" type="navigation_server" name="navigation_server"/>
+  <node pkg="move_quadcopter" type="navigation_server" name="navigation_server" output="screen" />
 
   <!-- Launch navigation client -->
-  <node pkg="move_quadcopter" type="navigation_client" name="navigation_client"/>
+  <node pkg="move_quadcopter" type="navigation_client" name="navigation_client" output="screen" />
 
   <include file="$(find move_quadcopter)/launch/joy_teleop_sim.launch"/>
 
